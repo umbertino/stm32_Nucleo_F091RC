@@ -106,7 +106,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  char *msg = "Hello Nucleo Fun!\n\r";
+  char *msg = "Hello from Nucleo Fun!\n\r";
   int cnt = 0;
 
   while (1)
