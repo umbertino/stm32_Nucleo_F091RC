@@ -32,6 +32,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_hal.h"
+#include "stm32f0xx_hal_tim.h"
 #include "mxconstants.h"
 #include <string.h>
 
@@ -41,6 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
+TIM_HandleTypeDef tim1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -67,6 +69,7 @@ PUTCHAR_PROTOTYPE
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void Error_Handler(void);
+void InitializeTimer(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 
@@ -82,7 +85,6 @@ static void MX_USART2_UART_Init(void);
 
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -98,6 +100,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  InitializeTimer();
+  //BSP_LED_Init(LED2);
+  //BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
+
 
   /* USER CODE BEGIN 2 */
 
@@ -106,14 +112,18 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  char *msg = "Hello from Nucleo Fun!\n\r";
+  //char *msg = "Hello from Nucleo Fun!\n\r";
   int cnt = 0;
 
   while (1)
   {
 	  printf("Hello Printf %d\r\n", cnt % 10);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), 0xFFFF);
+	  //HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), 0xFFFF);
+	  //printf("B1-State: %lu\r\n", BSP_PB_GetState(BUTTON_USER));
+	  printf("B1-State: %d\r\n", HAL_GPIO_ReadPin(GPIOC, B1_Pin));
 	  HAL_Delay(500);
+	  //BSP_LED_Toggle(LED2);
+	  HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
 	  cnt++;
   /* USER CODE END WHILE */
 
@@ -185,6 +195,16 @@ static void MX_USART2_UART_Init(void)
     Error_Handler();
   }
 
+}
+
+void InitializeTimer(void)
+{
+  TIM_Base_InitTypeDef timerInitStructure;
+  timerInitStructure.Prescaler = 40000;
+  timerInitStructure.CounterMode = TIM_COUNTERMODE_UP;
+  timerInitStructure.Period = 500;
+  timerInitStructure.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  timerInitStructure.RepetitionCounter = 0;
 }
 
 /** Configure pins as
