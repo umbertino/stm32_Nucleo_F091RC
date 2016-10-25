@@ -42,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart2;
-TIM_HandleTypeDef tim1;
+TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -70,6 +70,7 @@ PUTCHAR_PROTOTYPE
 void SystemClock_Config(void);
 void Error_Handler(void);
 void InitializeTimer(void);
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 
@@ -101,6 +102,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   InitializeTimer();
+  HAL_TIM_Base_Start_IT(&htim3);
   //BSP_LED_Init(LED2);
   //BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
@@ -199,12 +201,39 @@ static void MX_USART2_UART_Init(void)
 
 void InitializeTimer(void)
 {
-  TIM_Base_InitTypeDef timerInitStructure;
-  timerInitStructure.Prescaler = 40000;
-  timerInitStructure.CounterMode = TIM_COUNTERMODE_UP;
-  timerInitStructure.Period = 500;
-  timerInitStructure.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  timerInitStructure.RepetitionCounter = 0;
+    TIM_ClockConfigTypeDef sClockSourceConfig;
+    TIM_MasterConfigTypeDef sMasterConfig;
+
+    htim3.Instance = TIM3;
+    htim3.Init.Prescaler = 48000;
+    htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim3.Init.Period = 500;
+    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+    if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+    {
+      Error_Handler();
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance==TIM3)
+  {
+    printf("TIM3 fired\r\n");
+  }
 }
 
 /** Configure pins as
