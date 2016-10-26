@@ -71,12 +71,12 @@ PUTCHAR_PROTOTYPE
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-void Error_Handler(void);
-void InitializeTimer(void);
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+static void SystemClock_Config(void);
+static void Error_Handler(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void InitializeTimer(void);
+
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -128,7 +128,7 @@ int main(void)
 	  //printf("B1-State: %d\r\n", HAL_GPIO_ReadPin(GPIOC, B1_Pin));
 	  HAL_Delay(500);
 	  //BSP_LED_Toggle(LED2);
-	  //HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
+	  HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
 	  cnt++;
   /* USER CODE END WHILE */
 
@@ -163,7 +163,7 @@ static void MX_USART2_UART_Init(void)
 
 }
 
-void InitializeTimer(void)
+static void InitializeTimer(void)
 {
 	/* Compute the prescaler value to have TIMx counter clock equal to 10000 Hz */
 	  uwPrescalerValue = (uint32_t)(SystemCoreClock / 10000) - 1;
@@ -248,7 +248,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
@@ -281,7 +281,7 @@ void SystemClock_Config(void)
   * @param  None
   * @retval None
   */
-void Error_Handler(void)
+static void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
   /* User can add his own implementation to report the HAL error return state */
@@ -307,6 +307,9 @@ void assert_failed(uint8_t* file, uint32_t line)
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 
+  while (1)
+  {
+  }
 }
 
 #endif
